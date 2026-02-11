@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import InstagramLogo from './InstagramLogo';
 
 const LoadingScreen = ({ onComplete }) => {
@@ -14,6 +14,114 @@ const LoadingScreen = ({ onComplete }) => {
     "Almost ready..."
   ];
 
+  // --- Particle animation refs ---
+  const canvasRef = useRef(null);
+  const particlesRef = useRef([]);
+  const animationFrameRef = useRef();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    const PARTICLE_COUNT = 120;
+
+    // Initialize particles
+    const initParticles = () => {
+      const particles = [];
+      for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          radius: Math.random() * 2 + 0.5, // 0.5 – 2.5px
+          speedX: (Math.random() - 0.5) * 0.3,
+          speedY: (Math.random() - 0.5) * 0.3,
+          opacity: Math.random() * 0.5 + 0.3, // 0.3 – 0.8
+        });
+      }
+      particlesRef.current = particles;
+    };
+
+    // Update particle positions
+    const updateParticles = () => {
+      const particles = particlesRef.current;
+      for (let p of particles) {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        // Wrap around edges
+        if (p.x < 0) p.x = width;
+        if (p.x > width) p.x = 0;
+        if (p.y < 0) p.y = height;
+        if (p.y > height) p.y = 0;
+      }
+    };
+
+    // Draw particles
+    const draw = () => {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, width, height);
+      
+      const particles = particlesRef.current;
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
+        ctx.fill();
+      }
+
+      // Optional: occasional faint connecting lines (adds "space" feel)
+      if (Math.random() < 0.03) {
+        for (let i = 0; i < 5; i++) {
+          const a = particles[Math.floor(Math.random() * particles.length)];
+          const b = particles[Math.floor(Math.random() * particles.length)];
+          const distance = Math.hypot(a.x - b.x, a.y - b.y);
+          if (distance < 80) {
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.strokeStyle = `rgba(180, 180, 255, 0.05)`;
+            ctx.stroke();
+          }
+        }
+      }
+    };
+
+    // Animation loop
+    const animate = () => {
+      updateParticles();
+      draw();
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    // Resize handler
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+      initParticles(); // re‑position particles for new dimensions
+    };
+
+    // Setup
+    canvas.width = width;
+    canvas.height = height;
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, []);
+
+  // --- Progress and message timers (unchanged) ---
   useEffect(() => {
     const progressInterval = setInterval(() => {
       setProgress(prev => {
@@ -41,21 +149,15 @@ const LoadingScreen = ({ onComplete }) => {
 
   return (
     <div className={`fixed inset-0 bg-black text-white flex items-center justify-center overflow-hidden z-50 transition-all duration-1000 ${isComplete ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(5)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-64 h-64 border border-white/5 rounded-full animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + Math.random() * 2}s`
-            }}
-          />
-        ))}
-      </div>
+      
+      {/* Canvas particle background */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{ background: 'black' }}
+      />
 
+      {/* Main UI content (unchanged, but now above canvas) */}
       <div className="relative z-10 flex flex-col items-center max-w-xl w-full px-6 text-center">
         <div className="relative mb-12">
           <div className="w-48 h-48 border-4 border-transparent border-t-blue-500/30 border-r-purple-500/30 rounded-full animate-spin"></div>
@@ -73,7 +175,7 @@ const LoadingScreen = ({ onComplete }) => {
         </div>
 
         <div className="space-y-6 w-full max-w-md">
-          {/* Project Name with Icon (Replacing "Analyzing your lists...") */}
+          {/* Project Name with Icon */}
           <div className="flex flex-col items-center justify-center gap-4 animate-fade-in-up">
             <div className="flex items-center gap-3">
               <div className="relative">
@@ -120,9 +222,6 @@ const LoadingScreen = ({ onComplete }) => {
             </div>
           </div>
         </div>
-
-        {/* Bottom Branding with same icon style as header */}
-       
       </div>
 
       <style jsx>{`

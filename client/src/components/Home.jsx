@@ -1,69 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import InstagramLogo from './InstagramLogo';
 import { ArrowUpCircle, ShieldCheck, Lock, Upload, BarChart3 } from 'lucide-react';
-
-// Snowfall Component
-const Snowfall = ({ darkMode }) => {
-  const [snowflakes, setSnowflakes] = useState([]);
-
-  useEffect(() => {
-    const count = 50;
-    const newSnowflakes = Array.from({ length: count }).map((_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      animationDuration: 8 + Math.random() * 12,
-      animationDelay: Math.random() * -10,
-      opacity: Math.random() * 0.4 + 0.1,
-      size: Math.random() * 3 + 1,
-      drift: Math.random() * 40 - 20,
-    }));
-    setSnowflakes(newSnowflakes);
-  }, []);
-
-  return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <div className={`absolute inset-0 transition-colors duration-1000 ${darkMode
-              ? 'bg-gradient-to-br from-[#0F111A] via-[#1a0b2e] to-[#0A0D14]'
-              : 'bg-gradient-to-br from-blue-50 via-purple-50/30 to-white'
-          }`} />
-
-      <div className={`absolute inset-0 opacity-30 transition-opacity duration-1000 ${darkMode ? 'mix-blend-overlay' : 'mix-blend-soft-light'}`}>
-        <div className={`absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] ${darkMode ? 'bg-purple-600/20' : 'bg-blue-300/30'}`} />
-        <div className={`absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full blur-[120px] ${darkMode ? 'bg-blue-600/10' : 'bg-purple-300/20'}`} style={{ animationDelay: '1s' }} />
-      </div>
-
-      {snowflakes.map((flake) => (
-        <div
-          key={flake.id}
-          className={`absolute rounded-full transition-all duration-1000 ${darkMode
-                  ? 'bg-gradient-to-br from-cyan-200 via-white to-blue-100 shadow-[0_0_8px_rgba(34,211,238,0.6)]'
-                  : 'bg-gradient-to-br from-sky-400 via-blue-300 to-cyan-300 shadow-[0_0_10px_rgba(14,165,233,0.7)]'
-              }`}
-          style={{
-            left: `${flake.left}%`,
-            top: `-10px`,
-            width: `${flake.size}px`,
-            height: `${flake.size}px`,
-            opacity: flake.opacity,
-            animation: `fall ${flake.animationDuration}s linear infinite`,
-            animationDelay: `${flake.animationDelay}s`,
-            '--drift': `${flake.drift}px`
-          }}
-        />
-      ))}
-      <style jsx>{`
-        @keyframes fall {
-          0% {
-            transform: translateY(-10px) translateX(0px);
-          }
-          100% {
-            transform: translateY(110vh) translateX(var(--drift));
-          }
-        }
-      `}</style>
-    </div>
-  );
-};
+import Snowfall from './Snowfall'; // ❄️ Imported from separate file
 
 // Main Home Component
 const Home = ({ onNavigate, darkMode, toggleTheme }) => {
@@ -91,7 +29,9 @@ const Home = ({ onNavigate, darkMode, toggleTheme }) => {
             aria-label="Toggle Theme"
           >
             <span
-              className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 shadow-lg transform transition-all duration-500 flex items-center justify-center ${darkMode ? 'translate-x-6' : 'translate-x-0'}`}
+              className={`absolute top-1 left-1 w-6 h-6 rounded-full bg-gradient-to-br from-white to-slate-100 dark:from-slate-900 dark:to-slate-800 shadow-lg transform transition-all duration-500 flex items-center justify-center ${
+                darkMode ? 'translate-x-6' : 'translate-x-0'
+              }`}
             >
               {darkMode ? (
                 <svg className="w-4 h-4 text-blue-300" fill="currentColor" viewBox="0 0 24 24">
@@ -274,110 +214,42 @@ const Home = ({ onNavigate, darkMode, toggleTheme }) => {
 
       <style jsx>{`
         @keyframes gradient-shift {
-          0%, 100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
         }
-        
         @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        
         @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
         }
-        
         @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
-        
         @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
         }
-        
         @keyframes bounce-in {
-          0% {
-            opacity: 0;
-            transform: scale(0.3);
-          }
-          50% {
-            opacity: 1;
-            transform: scale(1.05);
-          }
-          70% {
-            transform: scale(0.9);
-          }
-          100% {
-            transform: scale(1);
-          }
+          0% { opacity: 0; transform: scale(0.3); }
+          50% { opacity: 1; transform: scale(1.05); }
+          70% { transform: scale(0.9); }
+          100% { transform: scale(1); }
         }
-        
         @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
-        
-        .animate-slide-down {
-          animation: slide-down 0.4s ease-out;
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out;
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-        
-        .animate-scale-in {
-          animation: scale-in 0.5s ease-out;
-        }
-        
-        .animate-bounce-in {
-          animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        
-        .animate-gradient-shift {
-          background-size: 200% auto;
-          animation: gradient-shift 3s ease infinite;
-        }
-        
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
+        .animate-slide-down { animation: slide-down 0.4s ease-out; }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out; }
+        .animate-fade-in { animation: fade-in 0.8s ease-out; }
+        .animate-scale-in { animation: scale-in 0.5s ease-out; }
+        .animate-bounce-in { animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .animate-gradient-shift { background-size: 200% auto; animation: gradient-shift 3s ease infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
       `}</style>
     </div>
   );
