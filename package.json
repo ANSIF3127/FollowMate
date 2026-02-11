@@ -1,0 +1,20 @@
+{
+    "name": "followmate-uix-analyzer",
+    "version": "1.0.0",
+    "description": "FollowMate UI/UX Analyzer - Privacy-first Instagram follower analysis",
+    "scripts": {
+        "dev": "cd client && npm run dev",
+        "build": "cd client && npm run build",
+        "start": "node server/index.js",
+        "install:all": "cd client && npm install && cd ../server && npm install"
+    },
+    "keywords": [
+        "instagram",
+        "followers",
+        "analyzer",
+        "ui",
+        "ux"
+    ],
+    "author": "",
+    "license": "MIT"
+}
